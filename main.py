@@ -1,8 +1,8 @@
 from collections import deque
+import matplotlib.pyplot as plt
 
 algo = input("Enter algorithm (fcfs/sjf/rr/priority): ").lower()
 
-#input
 n = int(input("Enter number of processes: "))
 processes = []
 
@@ -21,11 +21,11 @@ if algo == "rr":
     tq = int(input("Enter Time Quantum: "))
 
 
-#FCFS
 def fcfs(processes):
     processes.sort(key=lambda x: x[1])
     time = 0
     result = []
+    gantt = []
 
     for p in processes:
         pid, at, bt = p
@@ -40,6 +40,8 @@ def fcfs(processes):
         wt = tat - bt
 
         result.append([pid, at, bt, start, completion, tat, wt])
+        gantt.append((pid, start, completion))
+
         time = completion
 
     print("\nFCFS Scheduling")
@@ -53,8 +55,9 @@ def fcfs(processes):
     print(f"\nAverage Waiting Time: {avg_wt:.3f}")
     print(f"Average Turnaround Time: {avg_tat:.3f}")
 
+    return gantt
 
-#SJF
+
 def sjf(processes):
     time = 0
     completed = 0
@@ -62,6 +65,7 @@ def sjf(processes):
 
     visited = [False] * n
     result = []
+    gantt = []
 
     while completed < n:
         idx = -1
@@ -86,6 +90,7 @@ def sjf(processes):
         wt = tat - bt
 
         result.append([pid, at, bt, start, completion, tat, wt])
+        gantt.append((pid, start, completion))
 
         time = completion
         visited[idx] = True
@@ -102,8 +107,9 @@ def sjf(processes):
     print(f"\nAverage Waiting Time: {avg_wt:.3f}")
     print(f"Average Turnaround Time: {avg_tat:.3f}")
 
+    return gantt
 
-#Round Robin
+
 def round_robin(processes, tq):
     queue = deque()
     time = 0
@@ -116,6 +122,7 @@ def round_robin(processes, tq):
     completed = 0
     visited = [False] * n
     result = []
+    gantt = []
 
     while completed < n:
         for i in range(n):
@@ -129,19 +136,20 @@ def round_robin(processes, tq):
 
         idx = queue.popleft()
 
-        if remaining_bt[idx] > tq:
-            time += tq
-            remaining_bt[idx] -= tq
-        else:
-            time += remaining_bt[idx]
-            completion = time
+        start = time
+        exec_time = min(tq, remaining_bt[idx])
 
+        time += exec_time
+        remaining_bt[idx] -= exec_time
+
+        gantt.append((pid_list[idx], start, time))
+
+        if remaining_bt[idx] == 0:
+            completion = time
             tat = completion - arrival[idx]
             wt = tat - processes[idx][2]
 
             result.append([pid_list[idx], arrival[idx], processes[idx][2], completion, tat, wt])
-
-            remaining_bt[idx] = 0
             completed += 1
 
         for i in range(n):
@@ -163,8 +171,9 @@ def round_robin(processes, tq):
     print(f"\nAverage Waiting Time: {avg_wt:.3f}")
     print(f"Average Turnaround Time: {avg_tat:.3f}")
 
+    return gantt
 
-#Priority Scheduling
+
 def priority_sched(processes):
     time = 0
     completed = 0
@@ -172,6 +181,7 @@ def priority_sched(processes):
 
     visited = [False] * n
     result = []
+    gantt = []
 
     while completed < n:
         idx = -1
@@ -196,6 +206,7 @@ def priority_sched(processes):
         wt = tat - bt
 
         result.append([pid, at, bt, pr, start, completion, tat, wt])
+        gantt.append((pid, start, completion))
 
         time = completion
         visited[idx] = True
@@ -212,18 +223,38 @@ def priority_sched(processes):
     print(f"\nAverage Waiting Time: {avg_wt:.3f}")
     print(f"Average Turnaround Time: {avg_tat:.3f}")
 
+    return gantt
+
+
+def draw_gantt(gantt):
+    fig, ax = plt.subplots()
+
+    for pid, start, end in gantt:
+        ax.barh(pid, end - start, left=start)
+        ax.text(start + (end - start)/2, pid, pid, ha='center', va='center', color='white')
+
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Processes")
+    ax.set_title("Gantt Chart")
+
+    plt.show()
+
 
 if algo == "fcfs":
-    fcfs(processes)
+    gantt = fcfs(processes)
 
 elif algo == "sjf":
-    sjf(processes)
+    gantt = sjf(processes)
 
 elif algo == "rr":
-    round_robin(processes, tq)
+    gantt = round_robin(processes, tq)
 
 elif algo == "priority":
-    priority_sched(processes)
+    gantt = priority_sched(processes)
 
 else:
     print("Invalid algorithm")
+    gantt = []
+
+if gantt:
+    draw_gantt(gantt)
