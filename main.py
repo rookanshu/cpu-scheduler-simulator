@@ -1,5 +1,7 @@
 n = int(input("Enter number of processes: "))
 tq = int(input("Enter Time Quantum: "))
+pr = int(input(f"Priority for {pid}: "))
+processes.append([pid, at, bt, pr])
 
 processes = []
 
@@ -151,3 +153,49 @@ print(f"\nAverage Waiting Time: {avg_wt:.3f}")
 print(f"Average Turnaround Time: {avg_tat:.3f}")
 
 
+#Proirity
+time = 0
+completed = 0
+n = len(processes)
+
+visited = [False] * n
+result = []
+
+while completed < n:
+    idx = -1
+    highest_priority = float('inf')
+
+    for i in range(n):
+        if processes[i][1] <= time and not visited[i]:
+            if processes[i][3] < highest_priority:
+                highest_priority = processes[i][3]
+                idx = i
+
+    if idx == -1:
+        time += 1
+        continue
+
+    pid, at, bt, pr = processes[idx]
+
+    start = time
+    completion = time + bt
+
+    tat = completion - at
+    wt = tat - bt
+
+    result.append([pid, at, bt, pr, start, completion, tat, wt])
+
+    time = completion
+    visited[idx] = True
+    completed += 1
+
+print("\nPriority Scheduling")
+print("PID AT BT PR ST CT TAT WT")
+for r in result:
+    print(*r)
+
+avg_wt = sum(r[7] for r in result) / n
+avg_tat = sum(r[6] for r in result) / n
+
+print(f"\nAverage Waiting Time: {avg_wt:.3f}")
+print(f"Average Turnaround Time: {avg_tat:.3f}")
