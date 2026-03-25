@@ -1,4 +1,5 @@
 n = int(input("Enter number of processes: "))
+tq = int(input("Enter Time Quantum: "))
 
 processes = []
 
@@ -8,6 +9,7 @@ for i in range(n):
     bt = int(input(f"Burst Time for {pid}: "))
     processes.append([pid, at, bt])
 
+#FCFS
 processes.sort(key=lambda x: x[1])
 
 time = 0
@@ -39,6 +41,7 @@ avg_tat = sum(r[5] for r in result) / n
 print(f"\nAverage Waiting Time: {avg_wt:.3f}")
 print(f"Average Turnaround Time: {avg_tat:.3f}")
 
+#SJF
 time = 0
 completed = 0
 n = len(processes)
@@ -84,3 +87,67 @@ avg_tat = sum(r[5] for r in result) / n
 
 print(f"\nAverage Waiting Time: {avg_wt:.3f}")
 print(f"Average Turnaround Time: {avg_tat:.3f}")
+
+
+#Round Robin
+from collections import deque
+
+queue = deque()
+time = 0
+n = len(processes)
+
+remaining_bt = [p[2] for p in processes]
+arrival = [p[1] for p in processes]
+pid_list = [p[0] for p in processes]
+
+completed = 0
+visited = [False] * n
+result = []
+
+while completed < n:
+    for i in range(n):
+        if arrival[i] <= time and not visited[i]:
+            queue.append(i)
+            visited[i] = True
+
+    if not queue:
+        time += 1
+        continue
+
+    idx = queue.popleft()
+
+    if remaining_bt[idx] > tq:
+        time += tq
+        remaining_bt[idx] -= tq
+    else:
+        time += remaining_bt[idx]
+        completion = time
+
+        tat = completion - arrival[idx]
+        wt = tat - processes[idx][2]
+
+        result.append([pid_list[idx], arrival[idx], processes[idx][2], completion, tat, wt])
+
+        remaining_bt[idx] = 0
+        completed += 1
+
+    for i in range(n):
+        if arrival[i] <= time and not visited[i]:
+            queue.append(i)
+            visited[i] = True
+
+    if remaining_bt[idx] > 0:
+        queue.append(idx)
+
+print("\nRound Robin Scheduling")
+print("PID AT BT CT TAT WT")
+for r in result:
+    print(*r)
+
+avg_wt = sum(r[5] for r in result) / n
+avg_tat = sum(r[4] for r in result) / n
+
+print(f"\nAverage Waiting Time: {avg_wt:.3f}")
+print(f"Average Turnaround Time: {avg_tat:.3f}")
+
+
