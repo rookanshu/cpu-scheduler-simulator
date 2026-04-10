@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Scheduling Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-stars"></div>
+    <div class="container">
+        <header>
+            <h1 class="glow-text">SCHEDULING ALGORITHM SIMULATOR</h1>
+        </header>
+
+        <div class="top-panels">
+            <!-- Left panel: Algorithm Config -->
+            <div class="card glass-panel alg-panel">
+                <h2>Configuration</h2>
+                
+                <div class="form-group">
+                    <label for="algorithm">Select Algorithm</label>
+                    <select id="algorithm" class="custom-select">
+                        <option value="fcfs">First Come First Serve (FCFS)</option>
+                        <option value="sjf">Shortest Job First (SJF - Non Preemptive)</option>
+                        <option value="priority">Priority Scheduling (Non Preemptive)</option>
+                        <option value="rr">Round Robin</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="tq-group">
+                    <label for="time-quantum">Time Quantum</label>
+                    <input type="number" id="time-quantum" min="1" value="2" class="custom-input">
+                </div>
+            </div>
+
+            <!-- Right panel: Process Input -->
+            <div class="card glass-panel process-panel">
+                <div class="panel-header">
+                    <h2>Manage Processes</h2>
+                    <div class="actions">
+                        <button id="btn-random" class="btn btn-icon" title="Generate Random Processes">🎲</button>
+                        <button id="btn-clear" class="btn btn-icon" title="Clear All">🗑️</button>
+                    </div>
+                </div>
+
+                <form id="process-form" class="process-form">
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="arrival-time">Arrival Time</label>
+                            <input type="number" id="arrival-time" min="0" value="0" required class="custom-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="burst-time">Burst Time</label>
+                            <input type="number" id="burst-time" min="1" value="1" required class="custom-input">
+                        </div>
+                        <div class="form-group hidden" id="priority-group">
+                            <label for="priority">Priority (Low # = High Pri)</label>
+                            <input type="number" id="priority" min="1" value="1" class="custom-input">
+                        </div>
+                        <button type="submit" class="btn btn-primary add-btn">Add</button>
+                    </div>
+                </form>
+
+                <div class="table-container">
+                    <table class="data-table" id="input-table">
+                        <thead>
+                            <tr>
+                                <th>Color</th>
+                                <th>PID</th>
+                                <th>Arrival Time</th>
+                                <th>Burst Time</th>
+                                <th class="prio-col hidden">Priority</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="process-list">
+                            <!-- Process rows will go here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Submit action -->
+                <button id="btn-simulate" class="btn btn-simulate glow-btn">SIMULATE</button>
+            </div>
+        </div>
+
+        <div class="results-panel hidden" id="results-panel">
+            <h2 class="glow-text section-title">Simulation Results</h2>
+            <!-- Gantt Chart -->
+            <div class="card glass-panel gantt-card">
+                <h3>Gantt Chart</h3>
+                <div class="gantt-chart-container" id="gantt-chart">
+                    <!-- Blocks injected by JS -->
+                </div>
+                <div class="gantt-axis" id="gantt-axis">
+                    <!-- Time labels injected by JS -->
+                </div>
+            </div>
+
+            <!-- Stats/Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card glass-panel">
+                    <div class="metric-title">Average Waiting Time</div>
+                    <div class="metric-value" id="avg-wt">0.00</div>
+                </div>
+                <div class="metric-card glass-panel">
+                    <div class="metric-title">Average Turnaround Time</div>
+                    <div class="metric-value" id="avg-tat">0.00</div>
+                </div>
+            </div>
+
+            <!-- Output Table -->
+            <div class="card glass-panel table-card">
+                <h3>Process Details</h3>
+                <div class="table-container">
+                    <table class="data-table" id="output-table">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>Arrival Time</th>
+                                <th>Burst Time</th>
+                                <th>Completion Time</th>
+                                <th>Turnaround Time</th>
+                                <th>Waiting Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="result-list">
+                            <!-- Results go here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
