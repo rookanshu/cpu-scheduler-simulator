@@ -55,7 +55,8 @@ body {
 }
 
 .container {
-    max-width: 1000px;
+    width: 95%;
+    max-width: 1400px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -110,7 +111,7 @@ h2 {
 /* Layout */
 .top-panels {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 0.85fr 2.15fr;
     gap: 1.5rem;
     align-items: start;
 }
@@ -167,13 +168,13 @@ label {
 }
 
 .custom-select option {
-    background: var(--bg-dark);
-    color: var(--text-main);
+    background: #1e293b;
+    color: #ffffff;
 }
 
 .light-theme .custom-select option {
-    background-color: #ffffff;
-    color: #1e293b;
+    background-color: #ffffff !important;
+    color: #1e293b !important;
 }
 
 .custom-input:focus, .custom-select:focus {
@@ -401,11 +402,18 @@ label {
 /* Navigation Styles */
 .main-nav {
     display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 15px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
     margin-bottom: 30px;
     border-radius: 12px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+    justify-content: center;
 }
 
 .nav-btn {
@@ -433,10 +441,16 @@ label {
 }
 
 .theme-toggle {
-    position: fixed !important;
-    top: 1.5rem !important;
-    right: 1.5rem !important;
-    z-index: 9999 !important;
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    z-index: 10 !important;
+    flex-shrink: 0;
+}
+
+.light-theme .theme-toggle {
+    background: white !important;
+    color: #1e293b !important;
 }
 
 .light-theme h2, .light-theme h3 {
@@ -523,6 +537,24 @@ label {
     to { opacity: 1; transform: translateY(0); }
 }
 
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+footer p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+@media (max-width: 1200px) {
+    .top-panels {
+        grid-template-columns: 1fr 1.5fr;
+    }
+}
+
 @media (max-width: 768px) {
     .top-panels {
         grid-template-columns: 1fr;
@@ -533,6 +565,10 @@ label {
     }
     .main-nav {
         flex-direction: column;
-        align-items: center;
+        gap: 15px;
+    }
+    .nav-links {
+        width: 100%;
+        justify-content: center;
     }
 }
