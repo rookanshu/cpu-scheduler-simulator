@@ -168,7 +168,12 @@ label {
 
 .custom-select option {
     background: var(--bg-dark);
-    color: white;
+    color: var(--text-main);
+}
+
+.light-theme .custom-select option {
+    background-color: #ffffff;
+    color: #1e293b;
 }
 
 .custom-input:focus, .custom-select:focus {
@@ -428,7 +433,10 @@ label {
 }
 
 .theme-toggle {
-    margin-left: 10px;
+    position: fixed !important;
+    top: 1.5rem !important;
+    right: 1.5rem !important;
+    z-index: 9999 !important;
 }
 
 .light-theme h2, .light-theme h3 {
