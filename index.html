@@ -10,6 +10,12 @@
 <body>
     <div class="background-stars"></div>
     <div class="container">
+        <nav class="main-nav glass-panel">
+            <button id="nav-simulator" class="nav-btn active">SIMULATOR</button>
+            <button id="nav-comparison" class="nav-btn">COMPARISON</button>
+            <button id="theme-toggle" class="btn btn-icon theme-toggle" title="Toggle Theme">🌙</button>
+        </nav>
+
         <header>
             <h1 class="glow-text">SCHEDULING ALGORITHM SIMULATOR</h1>
         </header>
@@ -130,6 +136,33 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <div id="comparison-view" class="hidden">
+            <h2 class="glow-text section-title">Algorithm Benchmarking</h2>
+            
+            <div class="card glass-panel comparison-card">
+                <h3>Comparative Metrics</h3>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Algorithm</th>
+                                <th>Avg Waiting Time</th>
+                                <th>Avg Turnaround Time</th>
+                                <th>Overall Efficiency</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-table-body">
+                            <!-- Comparison data injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="best-recommendation" class="recommendation-container">
+                <!-- Recommendation card will be injected here -->
             </div>
         </div>
     </div>

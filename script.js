@@ -33,6 +33,18 @@ const outputTableTbody = document.getElementById('result-list');
 const avgWtElem = document.getElementById('avg-wt');
 const avgTatElem = document.getElementById('avg-tat');
 
+// Navigation Elements
+const navSimulator = document.getElementById('nav-simulator');
+const navComparison = document.getElementById('nav-comparison');
+const comparisonView = document.getElementById('comparison-view');
+const simulatorTopPanels = document.querySelector('.top-panels');
+const headerTitle = document.querySelector('header h1');
+const themeToggle = document.getElementById('theme-toggle');
+
+// Comparison Table Elements
+const comparisonTableBody = document.getElementById('comparison-table-body');
+const recommendationContainer = document.getElementById('best-recommendation');
+
 // Handlers for algorithm switch
 algorithmSelect.addEventListener('change', (e) => {
     const alg = e.target.value;
@@ -126,6 +138,53 @@ function renderInputTable() {
         `;
         processListTbody.appendChild(tr);
     });
+}
+
+// Navigation Handling
+navSimulator.addEventListener('click', () => {
+    setActiveNav('simulator');
+});
+
+navComparison.addEventListener('click', () => {
+    if (processes.length === 0) {
+        alert("Please add processes in the simulator first!");
+        return;
+    }
+    setActiveNav('comparison');
+    runComparison();
+});
+
+function setActiveNav(view) {
+    if (view === 'simulator') {
+        navSimulator.classList.add('active');
+        navComparison.classList.remove('active');
+        
+        simulatorTopPanels.classList.remove('hidden');
+        // Results panel remains as it is (it has its own hidden logic)
+        comparisonView.classList.add('hidden');
+    } else {
+        navSimulator.classList.remove('active');
+        navComparison.classList.add('active');
+        
+        simulatorTopPanels.classList.add('hidden');
+        resultsPanel.classList.add('hidden');
+        comparisonView.classList.remove('hidden');
+    }
+}
+
+// Theme Toggle Handling
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('light-theme');
+    const isLight = document.body.classList.contains('light-theme');
+    themeToggle.innerText = isLight ? '☀️' : '🌙';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+});
+
+// Load saved theme
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+    themeToggle.innerText = '☀️';
 }
 
 // Simulation Core ----------------------------------------------------
@@ -403,6 +462,96 @@ function renderGantt(gantt) {
 
     ganttChart.innerHTML = currentHtml;
     ganttAxis.innerHTML = axisHtml;
+}
+
+// Comparison Benchmarking --------------------------------------------
+function runComparison() {
+    const algs = [
+        { name: 'FCFS', id: 'fcfs' },
+        { name: 'SJF', id: 'sjf' },
+        { name: 'Priority', id: 'priority' },
+        { name: 'Round Robin (TQ=2)', id: 'rr', tq: 2 },
+        { name: 'Round Robin (TQ=5)', id: 'rr', tq: 5 }
+    ];
+
+    const results = algs.map(alg => {
+        const procs = processes.map(p => ({...p}));
+        let res;
+        if (alg.id === 'rr') {
+            res = round_robin(procs, alg.tq);
+        } else if (alg.id === 'fcfs') {
+            res = fcfs(procs);
+        } else if (alg.id === 'sjf') {
+            res = sjf(procs);
+        } else if (alg.id === 'priority') {
+            res = priority_sched(procs);
+        }
+
+        const totalWt = res.result.reduce((sum, r) => sum + r.wt, 0);
+        const totalTat = res.result.reduce((sum, r) => sum + r.tat, 0);
+        const avgWt = totalWt / processes.length;
+        const avgTat = totalTat / processes.length;
+        
+        return { 
+            name: alg.name, 
+            avgWt, 
+            avgTat, 
+            efficiency: (100 / (avgWt + 1)).toFixed(2) // Mock efficiency metric
+        };
+    });
+
+    renderComparisonTable(results);
+    renderRecommendation(results);
+}
+
+function renderComparisonTable(results) {
+    comparisonTableBody.innerHTML = '';
+    
+    // Find best avg waiting time
+    const minWt = Math.min(...results.map(r => r.avgWt));
+
+    results.forEach(res => {
+        const isBest = res.avgWt === minWt;
+        const tr = document.createElement('tr');
+        if (isBest) tr.className = 'best-algo-row';
+        
+        tr.innerHTML = `
+            <td>${res.name}</td>
+            <td>${res.avgWt.toFixed(2)} ms</td>
+            <td>${res.avgTat.toFixed(2)} ms</td>
+            <td>${res.efficiency}%</td>
+        `;
+        comparisonTableBody.appendChild(tr);
+    });
+}
+
+function renderRecommendation(results) {
+    // Logic for "Best for Modern CPU"
+    // Modern CPUs prioritize responsiveness and multitasking.
+    // RR is generally the winner for interactive systems.
+    
+    const rrResult = results.find(r => r.name.startsWith('Round Robin'));
+    const sjfResult = results.find(r => r.name === 'SJF');
+    
+    let best = rrResult;
+    let reason = "Modern CPUs power interactive operating systems where responsiveness is key. <span class='modern-cpu-tag'>Round Robin</span> ensures fair distribution of CPU time, preventing any single process from hogging the system, which is crucial for modern multi-threaded environments.";
+    
+    if (sjfResult.avgWt < rrResult.avgWt * 0.7) {
+        // If SJF is significantly better in waiting time, we mention it as an alternative for throughput
+        reason += `<br><br><strong>Note:</strong> While SJF shows significantly lower waiting times in this simulation, it is often impractical in real CPUs because the next burst time is usually unknown.`;
+    }
+
+    recommendationContainer.innerHTML = `
+        <div class="card glass-panel recommendation-card">
+            <div class="recommendation-header">
+                <span class="win-badge">WINNER</span>
+                <h3>Recommended for Modern CPUs: ${best.name}</h3>
+            </div>
+            <div class="recommendation-content">
+                <p>${reason}</p>
+            </div>
+        </div>
+    `;
 }
 
 // Initial state

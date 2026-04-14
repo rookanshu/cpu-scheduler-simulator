@@ -10,6 +10,18 @@
     --glass-blur: blur(16px);
     --font-main: 'Inter', sans-serif;
     --font-mono: 'Fira Code', monospace;
+    --bg-color: #0a0a0c;
+    --card-shadow: rgba(0, 0, 0, 0.3);
+}
+
+.light-theme {
+    --bg-dark: #f1f5f9;
+    --card-bg: rgba(255, 255, 255, 0.7);
+    --border-color: rgba(99, 102, 241, 0.1);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --bg-color: #f8fafc;
+    --card-shadow: rgba(99, 102, 241, 0.05);
 }
 
 * {
@@ -20,12 +32,14 @@
 
 body {
     font-family: var(--font-main);
-    background-color: var(--bg-dark);
+    background-color: var(--bg-color);
     color: var(--text-main);
     min-height: 100vh;
     padding: 2rem;
     position: relative;
     overflow-x: hidden;
+    scroll-behavior: smooth;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Starry background effect */
@@ -85,8 +99,8 @@ h2 {
     border: 1px solid var(--border-color);
     border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 32px 0 var(--card-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
 .glass-panel:hover {
@@ -127,15 +141,20 @@ label {
 }
 
 .custom-input, .custom-select {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--light-theme-input-bg, rgba(0, 0, 0, 0.2));
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 0.75rem 1rem;
-    color: #fff;
+    color: var(--text-main);
     font-family: var(--font-mono);
     font-size: 1rem;
     outline: none;
     transition: all 0.3s ease;
+}
+
+.light-theme .custom-input, .light-theme .custom-select {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .custom-select {
@@ -374,6 +393,128 @@ label {
     -webkit-text-fill-color: transparent;
 }
 
+/* Navigation Styles */
+.main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 15px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    letter-spacing: 1px;
+}
+
+.nav-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-btn.active {
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+.theme-toggle {
+    margin-left: 10px;
+}
+
+.light-theme h2, .light-theme h3 {
+    color: #1e293b;
+}
+
+.light-theme .btn-icon {
+    background: white;
+    color: #64748b;
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.light-theme .btn-icon:hover {
+    background: #f1f5f9;
+}
+
+.light-theme .data-table th {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.light-theme .gantt-chart-container {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Comparison Styles */
+.comparison-card {
+    margin-top: 20px;
+}
+
+.best-algo-row {
+    background: rgba(16, 185, 129, 0.1) !important;
+}
+
+.best-algo-row td {
+    color: #10b981 !important;
+    font-weight: 600;
+}
+
+.recommendation-container {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.recommendation-card {
+    max-width: 800px;
+    border-left: 4px solid #6366f1;
+    animation: slideUp 0.6s ease-out;
+}
+
+.recommendation-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.recommendation-header h3 {
+    margin: 0;
+    color: #f8fafc;
+}
+
+.win-badge {
+    background: #6366f1;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.recommendation-content p {
+    line-height: 1.6;
+    color: #94a3b8;
+}
+
+.modern-cpu-tag {
+    color: #6366f1;
+    font-weight: 600;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 768px) {
     .top-panels {
         grid-template-columns: 1fr;
@@ -381,5 +522,9 @@ label {
     .input-row {
         flex-direction: column;
         align-items: stretch;
+    }
+    .main-nav {
+        flex-direction: column;
+        align-items: center;
     }
 }
